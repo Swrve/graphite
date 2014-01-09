@@ -52,10 +52,10 @@ end
 execute 'install carbon' do
   command "python setup.py install --prefix=#{node['graphite']['base_dir']} --install-lib=#{node['graphite']['base_dir']}/lib"
   cwd "#{Chef::Config[:file_cache_path]}/carbon-#{version}"
-  creates lazy {
+  not_if do
     pyver = node['languages']['python']['version'][0..-3]
-    "#{node['graphite']['base_dir']}/lib/carbon-#{version}-py#{pyver}.egg-info"
-  }
+    ::File.exists?(::File.join(node['graphite']['base_dir'], "lib", "carbon-#{version}-py#{pyver}.egg-info"))
+  end
 end
 
 template "#{node['graphite']['base_dir']}/conf/carbon.conf" do
